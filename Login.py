@@ -30,20 +30,17 @@ def admin_authenticate():
 	hash = password.hexdigest()
 	conn = sqlite3.connect('auth.db')
 	c = conn.cursor()
-	c.execute(f"SELECT * FROM users WHERE username='{username}' AND privileged=1")
+	c.execute(f"SELECT * FROM users WHERE username='{username}' AND password='{password}' AND privileged=1")
 	entries = c.fetchone()
 	if entries is None:
 		conn.commit()
 		conn.close()
 		return 0
-	elif entries[1] == hash:	
+	else:	
 		conn.commit()
 		conn.close()
 		print("Authorised.")
 		return 1
-	else:
-		print("Incorrect Password.")
-		return 0
 
 def new_user(username, hash):
 	hash = hash.hexdigest()
@@ -79,25 +76,23 @@ def new_prived_user(username, hash):
 			conn.close()
 			return "Username already in use"
 	elif isPriv == 0:
-		print("Username Incorrect or User isn't privileged.")
+		print("Credentials incorrect or User isn't privileged.")
 
 
 def login(username, hash):
 	hash = hash.hexdigest()
 	conn = sqlite3.connect('auth.db')
 	c = conn.cursor()
-	c.execute(f"SELECT * FROM users WHERE username='{username}'")
+	c.execute(f"SELECT * FROM users WHERE username='{username}' AND password='{hash}'")
 	entries = c.fetchone()
 	if entries is None:
 		conn.commit()
 		conn.close()
 		return "Username or Password is incorrect."
-	elif entries[1] == hash:	
+	else:	
 		conn.commit()
 		conn.close()
-		return "Password Correct!"
-	else:
-		return "Username or Password is incorrect."
+		return "Login Authorised."
 
 def get_creds():
 	username = input("Enter username: ")
@@ -107,7 +102,7 @@ def get_creds():
 	entries = c.fetchone()
 	conn.commit()
 	conn.close()
-	return f"""Username: {entries[0]}\nHash: {entries[1]}\nUnique Identifier: {entries[2]}"""
+	return f"Username: {entries[0]}\nHash: {entries[1]}\nUnique Identifier: {entries[2]}"
 	
 def delete_user_by_id(id):
 	isPriv = admin_authenticate()
@@ -118,7 +113,7 @@ def delete_user_by_id(id):
 		conn.commit()
 		conn.close()
 	elif isPriv == 0:
-		print("Username Incorrect or User isn't privileged.")
+		print("Credentials Incorrect or User isn't privileged.")
 
 def delete_user_by_name(username):
 	isPriv = admin_authenticate()
@@ -129,7 +124,7 @@ def delete_user_by_name(username):
 		conn.commit()
 		conn.close()
 	elif isPriv == 0:
-		print("Username Incorrect or User isn't privileged.")
+		print("Credentials Incorrect or User isn't privileged.")
 
 username = input("Enter Username: ")
 password = bytes(input("Enter Password: "), encoding='utf8')
