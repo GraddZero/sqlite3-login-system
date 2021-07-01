@@ -4,19 +4,21 @@
 
 #imports required modules
 import hashlib
+import os
 import sqlite3
 
-# conn = sqlite3.connect('auth.db')
-# cursor = conn.cursor()
-# cursor.execute("""CREATE TABLE users (
-# 	username text,	
-# 	password text,
-# 	privileged integer,
-# 	id integer not null primary key autoincrement
-# )""")
-# cursor.execute("INSERT into users VALUES ('admin','SHA256HASH',1,NULL)")
-# conn.commit()
-# conn.close()
+if not os.path.isfile('auth.db'):
+	conn = sqlite3.connect('auth.db')
+	cursor = conn.cursor()
+	cursor.execute("""CREATE TABLE users (
+		username text,	
+		password text,
+		privileged integer,
+		id integer not null primary key autoincrement
+	)""")
+	cursor.execute("INSERT into users VALUES ('admin','SHA256HASH',1,NULL)") #change the 'sha256hash' to a sha256 hash of a password/phrase
+	conn.commit()
+	conn.close()
 
 def admin_authenticate():
 	username = input("Input privileged user's username: ")
